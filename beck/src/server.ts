@@ -2,7 +2,7 @@ import 'dotenv/config';
 import app from './app';
 import AppDataSource from './data-source';
 
-const PORT = process.env.APP_PORT;
+const PORT = parseInt(process.env.APP_PORT!);
 
 (async () => {
   await AppDataSource.initialize()
@@ -13,7 +13,7 @@ const PORT = process.env.APP_PORT;
       console.error('❌ Error during Data Source initialization -> ', err);
     });
 
-  app.listen(4012, () => {
+  app.listen(PORT, () => {
     console.log(`🚀 Server running at http://localhost:${PORT}`);
   });
 })();
