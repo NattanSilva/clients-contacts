@@ -5,9 +5,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import Contact from './contact.entity';
 
 @Entity('users')
 class User {
@@ -37,6 +39,9 @@ class User {
 
   @Column({ nullable: true, unique: true })
   secondTellphone: string;
+
+  @OneToMany(() => Contact, (contact) => contact.owner)
+  contacts: Contact[];
 
   @BeforeUpdate()
   @BeforeInsert()
