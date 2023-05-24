@@ -1,3 +1,4 @@
+import { ContactRequest } from '../../interfaces/contact.interfaces';
 import {
   UserLoginRequest,
   UserRequest,
@@ -31,4 +32,18 @@ const mockedSecondUserLogin: UserLoginRequest = {
   password: '123pedro',
 };
 
-export { mockedUser, mockedSecondUser, mockedUserLogin, mockedSecondUserLogin };
+const mockedContact: ContactRequest = {
+  completeName: 'Paulo Marques',
+  email: 'paulo@mail.com',
+  secondEmail: null,
+  tellphone: '(87)12345-6789',
+  secondTellphone: null,
+};
+
+export {
+  mockedUser,
+  mockedSecondUser,
+  mockedUserLogin,
+  mockedSecondUserLogin,
+  mockedContact,
+};
