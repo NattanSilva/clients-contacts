@@ -3,6 +3,8 @@ import { createGlobalStyle } from 'styled-components';
 const GlobalStyle = createGlobalStyle`
   :root {
     --bg-black: #121215;
+    --bg-black-50: rgba(0, 0, 0, 0.5);
+    --bg-gray-700: #1F1F23;
     --white-full: #FFF;
     --text-black: #09090A;
     --text-gray-50: #EAEAEA;
@@ -32,6 +34,7 @@ const GlobalStyle = createGlobalStyle`
     display: flex;
     align-items: center;
     justify-content: center;
+    border: none;
   }
 `;
 
