@@ -1,14 +1,25 @@
 import axios from 'axios';
-import { createContext, useState } from 'react';
+import { createContext, useContext, useState } from 'react';
+import { toast } from 'react-toastify';
 import api from '../api';
+import { ModalContext } from './modalContext';
 
-interface UserData {
+export interface UserData {
   id: string;
   completeName: string;
   email: string;
   password: string;
   createdAt: Date;
   updatedAt: Date;
+  tellphone: string;
+  secondEmail?: string;
+  secondTellphone?: string;
+}
+
+export interface RegistUser {
+  completeName: string;
+  email: string;
+  password: string;
   tellphone: string;
   secondEmail?: string;
   secondTellphone?: string;
@@ -25,14 +36,31 @@ interface UserProviderProps {
 
 interface IUserContext {
   userData: UserData;
+  setUserData: React.Dispatch<React.SetStateAction<UserData>>;
   getUserData: () => Promise<void>;
   loginUser: (data: LoginUser) => Promise<void>;
+  registUser: (data: RegistUser) => Promise<void>;
 }
 
 export const UserContext = createContext<IUserContext>({} as IUserContext);
 
 export function UserProvider({ children }: UserProviderProps) {
   const [userData, setUserData] = useState<UserData>({} as UserData);
+  const { activeModal } = useContext(ModalContext);
+
+  const registUser = async (data: RegistUser) => {
+    try {
+      const response = await api.post('/user', data);
+      if (response.data) {
+        toast.success('Conta criada com sucesso!');
+        activeModal('login');
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        toast.error(`Falha: ${error.message}!`);
+      }
+    }
+  };
 
   const loginUser = async (data: LoginUser) => {
     try {
@@ -40,16 +68,16 @@ export function UserProvider({ children }: UserProviderProps) {
 
       if (response.data.token) {
         localStorage.setItem('@userToken', response.data.token);
-        alert('Login bem sucedido!');
+        toast.success('Login bem sucedido!');
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
         switch (error.response?.status) {
           case 401:
-            alert('Falha: email e/ou senha inválidos!');
+            toast.error('Falha: email e/ou senha inválidos!');
             break;
           default:
-            alert('Falha ao realizar o login!');
+            toast.error('Falha ao realizar o login!');
             break;
         }
       }
@@ -58,17 +86,24 @@ export function UserProvider({ children }: UserProviderProps) {
 
   async function getUserData() {
     try {
-      const response = await api.get<UserData>(`/user`);
+      const response = await api.get<UserData>(`/user`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('@userToken')}`,
+        },
+      });
       setUserData(response.data);
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        alert(error.message);
+        toast.error(error.message);
       }
     }
   }
 
   return (
-    <UserContext.Provider value={{ userData, loginUser, getUserData }}>
+    <UserContext.Provider
+      value={{ userData, setUserData, registUser, loginUser, getUserData }}
+    >
       {children}
     </UserContext.Provider>
   );

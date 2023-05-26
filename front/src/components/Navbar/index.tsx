@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useContext, useEffect } from 'react';
 import noUserImg from '../../assets/no-user.svg';
+import { ModalContext } from '../../providers/modalContext';
+import { UserContext, UserData } from '../../providers/userContext';
 import {
   Header,
   LogoutButton,
@@ -12,30 +14,32 @@ import {
   UserName,
 } from './styles';
 
-interface User {
-  completeName: string;
-}
-
 export const Navbar = () => {
-  const [user, setUser] = useState<User | null>(null);
+  const { activeModal } = useContext(ModalContext);
+  const { userData, setUserData, getUserData } = useContext(UserContext);
 
-  const userLogin = (e: React.MouseEvent<HTMLElement>) => {
+  const activeRegistModal = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
-    setUser({
-      completeName: 'Nattan Silva',
-    });
+    activeModal('regist');
   };
 
-  const userLogoff = (e: React.MouseEvent<HTMLElement>) => {
+  const logout = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
-    setUser(null);
+    localStorage.clear();
+    setUserData({} as UserData);
   };
+
+  useEffect(() => {
+    if (localStorage.getItem('@userToken')) {
+      getUserData();
+    }
+  }, [getUserData]);
 
   return (
     <Header>
-      {!user ? (
+      {!userData?.completeName ? (
         <RegistContainer>
-          <RegistButton href="#" onClick={userLogin}>
+          <RegistButton href="#" onClick={activeRegistModal}>
             <img src={noUserImg} alt="Imagem de usuário vazio" />
             <RegistText>
               <span>Crie sua conta</span> e salve seus contatos!
@@ -45,10 +49,10 @@ export const Navbar = () => {
       ) : (
         <NavbarContainer>
           <UserContainer>
-            <UserAvatar>{user.completeName[0]}</UserAvatar>
-            <UserName>{user.completeName}</UserName>
+            <UserAvatar>{userData.completeName[0]}</UserAvatar>
+            <UserName>{userData.completeName}</UserName>
           </UserContainer>
-          <LogoutButton onClick={userLogoff}>Sair</LogoutButton>
+          <LogoutButton onClick={logout}>Sair</LogoutButton>
         </NavbarContainer>
       )}
     </Header>
