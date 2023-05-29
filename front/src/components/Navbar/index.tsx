@@ -1,5 +1,6 @@
 import { useContext, useEffect } from 'react';
 import noUserImg from '../../assets/no-user.svg';
+import { ContactsContext } from '../../providers/contactContext';
 import { ModalContext } from '../../providers/modalContext';
 import { UserContext, UserData } from '../../providers/userContext';
 import {
@@ -17,22 +18,27 @@ import {
 export const Navbar = () => {
   const { activeModal } = useContext(ModalContext);
   const { userData, setUserData, getUserData } = useContext(UserContext);
+  const { setContactsList } = useContext(ContactsContext);
 
   const activeRegistModal = (e: React.MouseEvent<HTMLElement>) => {
-    e.preventDefault();
     activeModal('regist');
   };
 
   const logout = (e: React.MouseEvent<HTMLElement>) => {
-    e.preventDefault();
+    e.preventDefault()
     localStorage.clear();
     setUserData({} as UserData);
+    setContactsList([]);
   };
 
   useEffect(() => {
-    if (localStorage.getItem('@userToken')) {
-      getUserData();
+    async function getUser() {
+      if (localStorage.getItem('@userToken')) {
+        await getUserData();
+      }
     }
+
+    getUser();
   }, [getUserData]);
 
   return (

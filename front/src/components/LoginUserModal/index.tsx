@@ -40,17 +40,15 @@ export const LoginUserModal = () => {
 
   const login = async (data: LoginUser) => {
     await loginUser(data);
-    await getUserData();
+    getUserData();
     desactiveModal();
   };
 
   const closeModal = (e: React.MouseEvent<HTMLElement>) => {
-    e.preventDefault();
     desactiveModal();
   };
 
   const switchModal = (e: React.MouseEvent<HTMLElement>) => {
-    e.preventDefault();
     activeModal('regist');
   };
 

@@ -2,64 +2,62 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useContext } from 'react';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
+import { ContactsContext, RegistContact } from '../../providers/contactContext';
 import { ModalContext } from '../../providers/modalContext';
-import { RegistUser, UserContext } from '../../providers/userContext';
 import {
   ModalBox,
   ModalCloseBtn,
-  ModalFooterContainer,
-  ModalFooterText,
   ModalForm,
   ModalFormBtn,
   ModalFormInput,
   ModalFormLabel,
   ModalTitle,
-} from './styles';
+} from '../CreateUserModal/styles';
 
-const registSchema = yup.object({
+const registContactSchema = yup.object({
   completeName: yup.string().required('Nome completo obrigatório'),
   tellphone: yup
     .string()
     .min(14, 'Deve seguir o modelo (99)99999-9999')
     .required('Telefone obrigatório'),
   email: yup.string().email().required('Email obrigatório'),
-  password: yup
-    .string()
-    .min(8, 'Senha deve ter no min 8 caracteres')
-    .required('Senha obrigatória'),
   secondEmail: yup.string().email().optional(),
   secondTellphone: yup.string().optional(),
 });
 
-export const CreateUserModal = () => {
-  const { desactiveModal, activeModal, swithPlaceholder } =
-    useContext(ModalContext);
-  const { registUser } = useContext(UserContext);
+export const CreateContactModal = () => {
+  const { desactiveModal, swithPlaceholder } = useContext(ModalContext);
+  const { registNewContact } = useContext(ContactsContext);
+
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<RegistUser>({
-    resolver: yupResolver(registSchema),
+  } = useForm<RegistContact>({
+    resolver: yupResolver(registContactSchema),
   });
 
   const closeModal = (e: React.MouseEvent<HTMLElement>) => {
     desactiveModal();
   };
 
-  const switchModal = (e: React.MouseEvent<HTMLElement>) => {
-    activeModal('login');
-  };
+  const registContact = async (data: RegistContact) => {
+    if (data.secondEmail === '') {
+      data.secondEmail = undefined;
+    }
 
-  const regist = async (data: RegistUser) => {
-    await registUser(data);
+    if (data.secondTellphone === '') {
+      data.secondEmail = undefined;
+    }
+
+    await registNewContact(data);
   };
 
   return (
     <ModalBox>
-      <ModalTitle>Cadastro</ModalTitle>
+      <ModalTitle>Novo Contato</ModalTitle>
       <ModalCloseBtn onClick={closeModal}>X</ModalCloseBtn>
-      <ModalForm onSubmit={handleSubmit(regist)}>
+      <ModalForm onSubmit={handleSubmit(registContact)}>
         <ModalFormLabel>Nome Completo</ModalFormLabel>
         <ModalFormInput
           type="text"
@@ -94,17 +92,6 @@ export const CreateUserModal = () => {
           )}
           {...register('email')}
         />
-        <ModalFormLabel>Password</ModalFormLabel>
-        <ModalFormInput
-          type="password"
-          id="password"
-          className={errors.password?.message ? 'errorField' : ''}
-          placeholder={swithPlaceholder(
-            'sEnh4Secret4',
-            errors.password?.message
-          )}
-          {...register('password')}
-        />
         <ModalFormLabel>E-mail Secundário</ModalFormLabel>
         <ModalFormInput
           type="email"
@@ -127,13 +114,8 @@ export const CreateUserModal = () => {
           )}
           {...register('secondTellphone')}
         />
-        <ModalFormBtn type="submit">Cadastrar</ModalFormBtn>
+        <ModalFormBtn type="submit">Criar</ModalFormBtn>
       </ModalForm>
-      <ModalFooterContainer>
-        <ModalFooterText onClick={switchModal}>
-          Já é cadastrado na nossa rede? <span>Entre agora!</span>
-        </ModalFooterText>
-      </ModalFooterContainer>
     </ModalBox>
   );
 };
