@@ -1,4 +1,6 @@
 import { useContext } from 'react';
+import { ContactsContainer } from './components/ContactsContainer';
+import { CreateContactModal } from './components/CreateContactModal';
 import { CreateUserModal } from './components/CreateUserModal';
 import { LoginUserModal } from './components/LoginUserModal';
 import { ModalContainer } from './components/ModalContainer';
@@ -8,15 +10,17 @@ import { ModalContext } from './providers/modalContext';
 function App() {
   const { modalType } = useContext(ModalContext);
   return (
-    <>
+    <div className="generalContainer">
       <Navbar />
+      <ContactsContainer />
       {modalType !== '' && (
         <ModalContainer>
           {modalType === 'regist' && <CreateUserModal />}
           {modalType === 'login' && <LoginUserModal />}
+          {modalType === 'registContact' && <CreateContactModal />}
         </ModalContainer>
       )}
-    </>
+    </div>
   );
 }
 

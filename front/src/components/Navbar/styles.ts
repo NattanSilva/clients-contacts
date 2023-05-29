@@ -68,6 +68,9 @@ export const UserName = styled.p`
   color: var(--text-gray-50);
   font-weight: 500;
   font-size: 1.2rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 export const UserAvatar = styled.div`

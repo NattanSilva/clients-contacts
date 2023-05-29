@@ -29,6 +29,15 @@ const GlobalStyle = createGlobalStyle`
     background-color: var(--bg-black);
   }
 
+  .generalContainer {
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--bg-black);
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+  }
+
   button {
     cursor: pointer;
     display: flex;

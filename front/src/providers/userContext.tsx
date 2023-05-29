@@ -2,6 +2,7 @@ import axios from 'axios';
 import { createContext, useContext, useState } from 'react';
 import { toast } from 'react-toastify';
 import api from '../api';
+import { ContactsContext } from './contactContext';
 import { ModalContext } from './modalContext';
 
 export interface UserData {
@@ -47,6 +48,7 @@ export const UserContext = createContext<IUserContext>({} as IUserContext);
 export function UserProvider({ children }: UserProviderProps) {
   const [userData, setUserData] = useState<UserData>({} as UserData);
   const { activeModal } = useContext(ModalContext);
+  const { getAllContacts } = useContext(ContactsContext);
 
   const registUser = async (data: RegistUser) => {
     try {
@@ -69,6 +71,8 @@ export function UserProvider({ children }: UserProviderProps) {
       if (response.data.token) {
         localStorage.setItem('@userToken', response.data.token);
         toast.success('Login bem sucedido!');
+        getUserData();
+        getAllContacts();
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
