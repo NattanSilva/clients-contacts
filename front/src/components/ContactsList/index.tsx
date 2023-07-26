@@ -1,6 +1,6 @@
-import { useContext, useEffect } from 'react';
+import { useContext } from 'react';
 import { Contact, ContactsContext } from '../../providers/contactContext';
-import { UserContext } from '../../providers/userContext';
+import { ModalContext } from '../../providers/modalContext';
 import {
   BtnContainer,
   ContactBtn,
@@ -10,18 +10,9 @@ import {
 } from './styles';
 
 export const ContactsList = () => {
-  const { contactsList, getAllContacts } = useContext(ContactsContext);
-  const { userData } = useContext(UserContext);
-
-  useEffect(() => {
-    async function getList() {
-      if (localStorage.getItem('@userToken')) {
-        await getAllContacts();
-      }
-    }
-
-    getList();
-  }, [userData, getAllContacts]);
+  const { contactsList, getOneContact, deleteContact } =
+    useContext(ContactsContext);
+  const { activeModal } = useContext(ModalContext);
 
   return (
     <ListContainer>
@@ -37,9 +28,38 @@ export const ContactsList = () => {
             <ContactCamp>
               Email: <strong>{contact?.email}</strong>
             </ContactCamp>
+            <ContactCamp>
+              Email Secundário:{' '}
+              <strong>
+                {contact?.secondEmail === undefined
+                  ? 'Vazio'
+                  : contact?.secondEmail}
+              </strong>
+            </ContactCamp>
+            <ContactCamp>
+              Telefone Secundário:{' '}
+              <strong>
+                {contact?.secondTellphone !== undefined
+                  ? 'Vazio'
+                  : contact?.secondTellphone}
+              </strong>
+            </ContactCamp>
             <BtnContainer>
-              <ContactBtn>Editar</ContactBtn>
-              <ContactBtn>Excluir</ContactBtn>
+              <ContactBtn
+                onClick={(e: any) => {
+                  e.preventDefault();
+                  getOneContact(contact.id);
+                  activeModal('editContact');
+                }}
+              >
+                Editar
+              </ContactBtn>
+              <ContactBtn onClick={async (e: any) => {
+                e.preventDefault()
+                await deleteContact(contact.id)
+              }}>
+                Excluir
+              </ContactBtn>
             </BtnContainer>
           </li>
         ))

@@ -25,21 +25,17 @@ export const Navbar = () => {
   };
 
   const logout = (e: React.MouseEvent<HTMLElement>) => {
-    e.preventDefault()
+    e.preventDefault();
     localStorage.clear();
     setUserData({} as UserData);
     setContactsList([]);
   };
 
   useEffect(() => {
-    async function getUser() {
-      if (localStorage.getItem('@userToken')) {
-        await getUserData();
-      }
+    if (localStorage.getItem('@userToken')) {
+      getUserData();
     }
-
-    getUser();
-  }, [getUserData]);
+  }, []);
 
   return (
     <Header>

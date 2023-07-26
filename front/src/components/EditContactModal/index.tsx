@@ -2,7 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useContext } from 'react';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
-import { ContactsContext, RegistContact } from '../../providers/contactContext';
+import { ContactsContext, IEditContact } from '../../providers/contactContext';
 import { ModalContext } from '../../providers/modalContext';
 import {
   ModalBox,
@@ -15,25 +15,22 @@ import {
 } from '../CreateUserModal/styles';
 
 const registContactSchema = yup.object({
-  completeName: yup.string().required('Nome completo obrigatório'),
-  tellphone: yup
-    .string()
-    .min(14, 'Deve seguir o modelo (99)99999-9999')
-    .required('Telefone obrigatório'),
-  email: yup.string().email().required('Email obrigatório'),
+  completeName: yup.string().notRequired(),
+  tellphone: yup.string().notRequired(),
+  email: yup.string().email().notRequired(),
   secondEmail: yup.string().email().optional(),
   secondTellphone: yup.string().optional(),
 });
 
-export const CreateContactModal = () => {
+export const EditContactModal = () => {
   const { desactiveModal, swithPlaceholder } = useContext(ModalContext);
-  const { registNewContact } = useContext(ContactsContext);
+  const { currentContact, editContact } = useContext(ContactsContext);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<RegistContact>({
+  } = useForm<IEditContact>({
     resolver: yupResolver(registContactSchema),
   });
 
@@ -41,31 +38,43 @@ export const CreateContactModal = () => {
     desactiveModal();
   };
 
-  const registContact = async (data: RegistContact) => {
+  const editCurrentContact = async (data: IEditContact) => {
+    if (data.completeName === '') {
+      delete data.completeName;
+    }
+
+    if (data.tellphone === '') {
+      delete data.tellphone;
+    }
+
+    if (data.email === '') {
+      delete data.email;
+    }
+
     if (data.secondEmail === '') {
-      data.secondEmail = undefined;
+      delete data.secondEmail;
     }
 
     if (data.secondTellphone === '') {
-      data.secondTellphone = undefined;
+      delete data.secondTellphone;
     }
 
-    await registNewContact(data);
+    await editContact(currentContact?.id as string, data);
     desactiveModal();
   };
 
   return (
     <ModalBox>
-      <ModalTitle>Novo Contato</ModalTitle>
+      <ModalTitle>Editar Contato</ModalTitle>
       <ModalCloseBtn onClick={closeModal}>X</ModalCloseBtn>
-      <ModalForm onSubmit={handleSubmit(registContact)}>
+      <ModalForm onSubmit={handleSubmit(editCurrentContact)}>
         <ModalFormLabel>Nome Completo</ModalFormLabel>
         <ModalFormInput
           type="text"
           id="completeName"
           className={errors.completeName?.message ? 'errorField' : ''}
           placeholder={swithPlaceholder(
-            'Seu nome completo',
+            currentContact?.completeName as string,
             errors.completeName?.message
           )}
           {...register('completeName')}
@@ -77,7 +86,7 @@ export const CreateContactModal = () => {
           id="telphone"
           className={errors.tellphone?.message ? 'errorField' : ''}
           placeholder={swithPlaceholder(
-            '(99)99999-9999',
+            currentContact?.tellphone as string,
             errors.tellphone?.message
           )}
           {...register('tellphone')}
@@ -88,7 +97,7 @@ export const CreateContactModal = () => {
           id="email"
           className={errors.email?.message ? 'errorField' : ''}
           placeholder={swithPlaceholder(
-            'example@mail.com',
+            currentContact?.email as string,
             errors.email?.message
           )}
           {...register('email')}
@@ -99,7 +108,7 @@ export const CreateContactModal = () => {
           id="secondEmail"
           className={errors.secondEmail?.message ? 'errorField' : ''}
           placeholder={swithPlaceholder(
-            'example@mail.com',
+            currentContact?.secondEmail as string,
             errors.secondEmail?.message
           )}
           {...register('secondEmail')}
@@ -110,12 +119,12 @@ export const CreateContactModal = () => {
           id="secondTellphone"
           className={errors.secondTellphone?.message ? 'errorField' : ''}
           placeholder={swithPlaceholder(
-            '(99)99999-9999',
+            currentContact?.secondTellphone as string,
             errors.secondTellphone?.message
           )}
           {...register('secondTellphone')}
         />
-        <ModalFormBtn type="submit">Criar</ModalFormBtn>
+        <ModalFormBtn type="submit">Salvar</ModalFormBtn>
       </ModalForm>
     </ModalBox>
   );

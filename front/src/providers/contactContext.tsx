@@ -26,11 +26,23 @@ export interface RegistContact {
   secondTellphone?: string;
 }
 
+export interface IEditContact {
+  completeName?: string;
+  email?: string;
+  tellphone?: string;
+  secondEmail?: string;
+  secondTellphone?: string;
+}
+
 interface IContactsContext {
   contactsList: Contact[];
   setContactsList: React.Dispatch<React.SetStateAction<Contact[]>>;
   getAllContacts: () => Promise<void>;
   registNewContact: (data: RegistContact) => Promise<void>;
+  getOneContact: (id: string) => void;
+  editContact: (id: string, data: IEditContact) => Promise<void>;
+  deleteContact: (id: string) => Promise<void>;
+  currentContact: Contact | undefined;
 }
 
 export const ContactsContext = createContext<IContactsContext>(
@@ -39,6 +51,7 @@ export const ContactsContext = createContext<IContactsContext>(
 
 export function ContactsProvider({ children }: ContactsProps) {
   const [contactsList, setContactsList] = useState<Contact[]>([]);
+  const [currentContact, setCurrentContact] = useState<Contact>({} as Contact);
 
   const getAllContacts = async () => {
     try {
@@ -58,11 +71,9 @@ export function ContactsProvider({ children }: ContactsProps) {
   };
 
   const registNewContact = async (data: RegistContact) => {
-    console.log(data);
     try {
       await api.post<Contact>('/contact', data);
-
-      getAllContacts();
+      await getAllContacts();
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.log(error);
@@ -71,6 +82,46 @@ export function ContactsProvider({ children }: ContactsProps) {
     }
   };
 
+  const getOneContact = (id: string) => {
+    setCurrentContact(
+      contactsList.find((contact) => contact.id === id) || ({} as Contact)
+    );
+  };
+
+  const editContact = async (id: string, data: IEditContact) => {
+    try {
+      await api.patch(`/contact/${id}`, data, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('@userToken')}`,
+        },
+      });
+      toast.success('Contato editado com sucesso!');
+      getAllContacts();
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error.message);
+      }
+    }
+  };
+
+  const deleteContact = async (id: string) => {
+    try {
+      await api.delete(`/contact/${id}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('@userToken')}`,
+        },
+      });
+      toast.success('Contato deletado com sucesso!');
+      getAllContacts();
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error.message);
+      }
+    }
+  }
+
   return (
     <ContactsContext.Provider
       value={{
@@ -78,6 +129,10 @@ export function ContactsProvider({ children }: ContactsProps) {
         setContactsList,
         getAllContacts,
         registNewContact,
+        getOneContact,
+        currentContact,
+        editContact,
+        deleteContact,
       }}
     >
       {children}
