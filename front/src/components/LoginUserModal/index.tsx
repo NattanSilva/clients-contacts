@@ -28,7 +28,7 @@ export const LoginUserModal = () => {
   const { desactiveModal, activeModal, swithPlaceholder } =
     useContext(ModalContext);
 
-  const { loginUser, getUserData } = useContext(UserContext);
+  const { loginUser } = useContext(UserContext);
 
   const {
     register,
@@ -40,7 +40,6 @@ export const LoginUserModal = () => {
 
   const login = async (data: LoginUser) => {
     await loginUser(data);
-    getUserData();
     desactiveModal();
   };
 

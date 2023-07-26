@@ -71,8 +71,8 @@ export function UserProvider({ children }: UserProviderProps) {
       if (response.data.token) {
         localStorage.setItem('@userToken', response.data.token);
         toast.success('Login bem sucedido!');
-        getUserData();
-        getAllContacts();
+        await getUserData();
+        await getAllContacts();
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -97,6 +97,9 @@ export function UserProvider({ children }: UserProviderProps) {
         },
       });
       setUserData(response.data);
+      if (localStorage.getItem('@userToken')) {
+        await getAllContacts();
+      }
     } catch (error) {
       if (axios.isAxiosError(error)) {
         toast.error(error.message);
