@@ -8,6 +8,8 @@ import { ModalContainer } from './components/ModalContainer';
 import { Navbar } from './components/Navbar';
 import { ContactsContext } from './providers/contactContext';
 import { ModalContext } from './providers/modalContext';
+import { EditUserModal } from './components/EditUserModal';
+import { UserInfoModal } from './components/UserInfoModal';
 
 function App() {
   const { modalType } = useContext(ModalContext);
@@ -21,6 +23,8 @@ function App() {
           {modalType === 'login' && <LoginUserModal />}
           {modalType === 'registContact' && <CreateContactModal />}
           {modalType === 'editContact' && <EditContactModal />}
+          {modalType === 'infoUser' && <UserInfoModal />}
+          {modalType === 'editUser' && <EditUserModal />}
         </ModalContainer>
       )}
     </div>

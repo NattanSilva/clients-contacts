@@ -24,6 +24,11 @@ export const Navbar = () => {
     activeModal('regist');
   };
 
+  const activeInfoUserModal = (e: React.MouseEvent<HTMLElement>) => {
+    e.preventDefault()
+    activeModal('infoUser');
+  };
+
   const logout = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
     localStorage.clear();
@@ -51,8 +56,12 @@ export const Navbar = () => {
       ) : (
         <NavbarContainer>
           <UserContainer>
-            <UserAvatar>{userData.completeName[0]}</UserAvatar>
-            <UserName>{userData.completeName}</UserName>
+            <UserAvatar onClick={activeInfoUserModal}>
+              {userData.completeName[0]}
+            </UserAvatar>
+            <UserName onClick={activeInfoUserModal}>
+              {userData.completeName}
+            </UserName>
           </UserContainer>
           <LogoutButton onClick={logout}>Sair</LogoutButton>
         </NavbarContainer>

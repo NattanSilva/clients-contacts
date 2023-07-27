@@ -26,6 +26,15 @@ export interface RegistUser {
   secondTellphone?: string;
 }
 
+export interface IEditUser {
+  completeName?: string;
+  email?: string;
+  password?: string;
+  tellphone?: string;
+  secondEmail?: string;
+  secondTellphone?: string;
+}
+
 export interface LoginUser {
   email: string;
   password: string;
@@ -41,6 +50,8 @@ interface IUserContext {
   getUserData: () => Promise<void>;
   loginUser: (data: LoginUser) => Promise<void>;
   registUser: (data: RegistUser) => Promise<void>;
+  updateUser: (data: IEditUser) => Promise<void>;
+  deleteUser: () => Promise<void>;
 }
 
 export const UserContext = createContext<IUserContext>({} as IUserContext);
@@ -48,7 +59,7 @@ export const UserContext = createContext<IUserContext>({} as IUserContext);
 export function UserProvider({ children }: UserProviderProps) {
   const [userData, setUserData] = useState<UserData>({} as UserData);
   const { activeModal } = useContext(ModalContext);
-  const { getAllContacts } = useContext(ContactsContext);
+  const { getAllContacts, setContactsList } = useContext(ContactsContext);
 
   const registUser = async (data: RegistUser) => {
     try {
@@ -107,9 +118,55 @@ export function UserProvider({ children }: UserProviderProps) {
     }
   }
 
+  const updateUser = async (data: IEditUser) => {
+    try {
+      await api.patch('/user', data, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('@userToken')}`,
+        },
+      });
+      toast.success('Conta editada com sucesso!');
+      await getUserData();
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error.message);
+      }
+    }
+  };
+
+  const deleteUser = async () => {
+    try {
+      await api.delete(`/user`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('@userToken')}`,
+        },
+      });
+      
+      toast.success('Conta deletada com sucesso!');
+      localStorage.clear();
+      setUserData({} as UserData);
+      setContactsList([]);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.log(error)
+        toast.error(error.message);
+      }
+    }
+  };
+
   return (
     <UserContext.Provider
-      value={{ userData, setUserData, registUser, loginUser, getUserData }}
+      value={{
+        userData,
+        setUserData,
+        registUser,
+        loginUser,
+        getUserData,
+        updateUser,
+        deleteUser,
+      }}
     >
       {children}
     </UserContext.Provider>

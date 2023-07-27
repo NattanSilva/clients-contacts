@@ -34,7 +34,7 @@ class Contact {
   @Column({ nullable: true, unique: true })
   secondTellphone: string;
 
-  @ManyToOne(() => User, (user) => user.contacts)
+  @ManyToOne(() => User, (user) => user.contacts, { onDelete: 'CASCADE' })
   owner: User;
 }
 
