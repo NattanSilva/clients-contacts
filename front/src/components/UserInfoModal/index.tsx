@@ -27,6 +27,7 @@ export const UserInfoModal = () => {
   const deleteAccount = async (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
     await deleteUser();
+    closeModal(e);
   };
   return (
     <ModalBox>
