@@ -64,16 +64,20 @@ export const UserContainer = styled.div`
   gap: 0.5rem;
 `;
 
-export const UserName = styled.p`
+export const UserName = styled.button`
+  max-width: 70%;
+  background-color: transparent;
+  border: none;
   color: var(--text-gray-50);
   font-weight: 500;
   font-size: 1.2rem;
-  white-space: nowrap;
   overflow: hidden;
+  white-space: nowrap;
+  display: block;
   text-overflow: ellipsis;
 `;
 
-export const UserAvatar = styled.div`
+export const UserAvatar = styled.button`
   width: 2.5rem;
   height: 2.5rem;
   display: flex;
