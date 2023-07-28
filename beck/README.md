@@ -32,14 +32,26 @@ Para utilizar esta API basta clonar este repositório, navegar ate a pasta **bec
 ```
 
 2. Copiar o arquivo `.env.example` na raiz do projeto, renomea-lo para `.env` e preencher as informações do seu banco de dados PostgreSQL local nas variáveis de ambiente contidas no arquivo.
+   
+3. Gerar as migrações do TypeORM com o comando:
 
-3. Inicializar a execução do projeto utilizando os comandos abaixo:
+```
+  yarn typeorm migration:generate ./src/migrations/createUsers -- -d ./src/data-source.ts
+```
+
+4. Execetuar a criação das tabelas no seu banco de dados PostgreSQL com o comando:
+
+```
+  yarn typeorm migration:run -- -d ./src/data-source
+```
+
+5. Inicializar a execução do projeto utilizando os comandos abaixo:
 
 ```
   yarn dev ou npm run dev
 ```
 
-4. Para rodar os testes de integração utilize o comando `yarn test`.
+6. Para rodar os testes de integração utilize o comando `yarn test`.
 
 ## Documentação
 
